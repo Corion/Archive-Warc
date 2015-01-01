@@ -1,30 +1,32 @@
 package Archive::WARC;
 use strict;
-use 5.020; # for the signatures
+use Filter::signatures;
+use feature 'signatures';
 use Carp qw( croak );
-use IO::Compress::Gzip qw(gzip gunzip); # well, this should be optional and also allow for xz and bz2
+
+use IO::Uncompress::AnyUncompress;
 
 # For convenience
-use HTTP::Headers;
+#use HTTP::Headers;
 #use HTTP::Request;
-äuse HTTP::Response;
+#use HTTP::Response;
 
 use vars qw(%record_types);
 
 sub new {
-    my( $class, %args )= @_;
+    my( $class, %options )= @_;
 
     if( ! $options{ fh }) {
         # If we don't have a file(handle), we create an in-memory buffer
         # to write to, in case somebody calls ->add() or ->write()
-        open $args{ fh }, \my $buffer
+        open $options{ fh }, \my $buffer
             or die "Couldn't create in-memory file: $!";
     };
     
     # List of requests+responses contained in this crawl
     # UUID -> offset
-    $args{ manifest } ||= {};
-    bless \%args => $class;
+    $options{ manifest } ||= {};
+    bless \%options => $class;
 }
 
 sub add_record {
@@ -50,8 +52,39 @@ sub read( $self, %options ) {
             or croak "Couldn't read archive '$options{ filename }': $!";
         binmode $options{ fh };
     };
+    my $fh= delete $options{ fh };
 
-    # Install a (de)compressor
+    # Support any compression
+    my $ofs= tell($fh);
+    my $reader= IO::Uncompress::AnyUncompress->new( $fh );
+    #my $reader= IO::Uncompress::Gunzip->new( $fh );
+    $reader->binmode();
+
+    while( ! $reader->eof ) {
+        # Save the offset in the compressed file of this part
+        # Found by nasty source-diving
+        my $r= Archive::WARC::Record->read( $reader, read_body => 1 );
+        #print $r->{_headers}->as_string;
+        #print sprintf "Header type: %s\n", $r->{_headers}->header('WARC-Type');
+        #print sprintf "Header type: %s\n", $r->{_headers}->header('Content-Type');
+        #print sprintf "UUID: %s\n", $r->{_headers}->header('WARC-UUID');
+        print $r->{_headers}->as_string;
+        #print sprintf "Content-Length according to WARC     : %d\n", $r->{_headers}->content_length;
+        if( defined $r->{body}) {
+            print sprintf "Content-Length according to read data: %d\n", length $r->{_body};
+        };
+        
+        if( 'text/plain' eq $r->{_headers}->content_type ) {
+            print "----\n";
+            print $r->{_body};
+            print "----\n";
+        };
+        
+        # If we have more, read them:
+        $reader->nextStream();
+        $ofs= tell($fh) - length( $reader->trailingData );
+        warn sprintf "File offset of last block %d\n", $ofs;
+    };
 }
 
 sub write( $self, %options ) {

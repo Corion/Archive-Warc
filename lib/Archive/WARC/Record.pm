@@ -90,6 +90,11 @@ sub read($self,$fh, %options) {
                 croak sprintf "Invalid WARC trailer - only read %d bytes instead of %d", $trailer, 4;
             };
         };
+
+        # If we didn't read to the end, we're likely not complete
+        $self->{body_complete}=    $max_len < $read
+                                || eof($fh);
+        
         # https://lists.gnu.org/archive/html/bug-wget/2012-11/msg00023.html
         # The Content-Length of files produced by (some versions of)
         # wget is invalid...
@@ -119,6 +124,14 @@ sub read($self,$fh, %options) {
     # Also provide the URL
 
     $self
+}
+
+sub body( $self, $fh ) {
+    if( ! $self->{body_complete}) {
+        # Need to fill in the body
+        $self->read($fh, read_body => 1 );
+    };
+    $self->{_body}
 }
 
 1;
