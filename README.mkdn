@@ -1,0 +1,22 @@
+
+[![Build Status](https://travis-ci.org/Corion/Archive-Warc.svg?branch=master)](https://github.com/Corion/Archive-Warc)
+
+# NAME
+
+Archive::Warc - read and write Web ARChive (WARC) files
+
+# NOTE
+
+This is a work in progress, not yet fit for release on CPAN.
+
+# SEE ALSO
+
+[https://github.com/iipc/warc-specifications/blob/gh-pages/specifications/warc-format/warc-1.1/index.md](https://github.com/iipc/warc-specifications/blob/gh-pages/specifications/warc-format/warc-1.1/index.md)
+
+[http://bibnum.bnf.fr/WARC/WARC\_ISO\_28500\_version1\_latestdraft.pdf](http://bibnum.bnf.fr/WARC/WARC_ISO_28500_version1_latestdraft.pdf)
+
+[http://www.digitalpreservation.gov/formats/fdd/fdd000236.shtml](http://www.digitalpreservation.gov/formats/fdd/fdd000236.shtml)
+
+[https://github.com/chfoo/warcat](https://github.com/chfoo/warcat)
+
+[Archive::HAR](https://metacpan.org/pod/Archive::HAR)

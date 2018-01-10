@@ -7,6 +7,18 @@ use Carp qw( croak );
 
 use IO::Uncompress::AnyUncompress;
 
+=head1 NAME
+
+Archive::Warc - read and write Web ARChive (WARC) files
+
+=head1 NOTE
+
+This is a work in progress, not yet fit for release on CPAN.
+
+=cut
+
+our $VERSION = 0.01;
+
 # For convenience
 #use HTTP::Headers;
 #use HTTP::Request;
@@ -53,7 +65,7 @@ sub read( $self, %options ) {
             or croak "Couldn't read archive '$options{ filename }': $!";
         binmode $options{ fh };
     };
-    my $fh= delete $options{ fh };
+    my $fh = delete $options{ fh };
 
     # Support any compression
     my $ofs= tell($fh);
