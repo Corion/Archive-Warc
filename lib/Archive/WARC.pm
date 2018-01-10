@@ -64,7 +64,7 @@ sub read( $self, %options ) {
     while( ! $reader->eof ) {
         # Save the offset in the compressed file of this part
         # Found by nasty source-diving
-        my $r= Archive::WARC::Record->read( $reader, read_body => 1 );
+        my $r= Archive::WARC::Record->read( $reader, read_body => 1, offset => $ofs );
         #print $r->{_headers}->as_string;
         #print sprintf "Header type: %s\n", $r->{_headers}->header('WARC-Type');
         #print sprintf "Header type: %s\n", $r->{_headers}->header('Content-Type');
