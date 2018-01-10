@@ -135,6 +135,8 @@ sub type( $self ) {
 
 =head1 SEE ALSO
 
+L<https://github.com/iipc/warc-specifications/blob/gh-pages/specifications/warc-format/warc-1.1/index.md>
+
 L<http://bibnum.bnf.fr/WARC/WARC_ISO_28500_version1_latestdraft.pdf>
 
 L<http://www.digitalpreservation.gov/formats/fdd/fdd000236.shtml>
