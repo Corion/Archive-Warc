@@ -41,6 +41,7 @@ sub read($self,$fh, %options) {
     # Headers longer than that are not interesting
     $options{ max_body_size } //= 1024*1024;
     $options{ strict }= 1;
+    $options{ offset } //= tell $fh;
 
     binmode $fh; # Should not be necessary, but...
     
@@ -130,7 +131,7 @@ sub read($self,$fh, %options) {
 sub body( $self, $fh ) {
     if( ! $self->{body_complete}) {
         # Need to fill in the body
-        $self->read($fh, read_body => 1 );
+        $self->read($fh, read_body => 1, offset => $self->{offset} );
     };
     $self->{_body}
 }
