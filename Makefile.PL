@@ -49,10 +49,14 @@ WriteMakefile1(
     },
 
     PREREQ_PM => {
+        'strict'                        => 0,
+        'warnings'                      => 0,
+        'Moo'                           => 2,
         'Filter::signatures'            => 0,
         'Carp'                          => 0,
         'HTTP::Headers'                 => 0,
         'IO::Uncompress::AnyUncompress' => 0,
+        'Data::Dumper'                  => 0,
     },
     TEST_REQUIRES => {
         'Test::More' => 0,

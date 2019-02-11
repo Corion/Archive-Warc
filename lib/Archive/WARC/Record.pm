@@ -1,5 +1,6 @@
 package Archive::WARC::Record;
 use strict;
+use Moo 2;
 use Filter::signatures;
 no warnings 'experimental::signatures';
 use feature 'signatures';
@@ -7,9 +8,15 @@ use Carp qw(croak);
 use HTTP::Headers;
 use IO::Uncompress::AnyUncompress ();
 
-sub new( $class, %args ) {
-    bless \%args => $class;
-};
+our $VERSION = 0.01;
+
+#has max_body_size => (is => 'ro', default => 1024*1024);
+#has strict        => (is => 'ro', default => 1);
+has offset        => (is => 'ro');
+has version       => (is => 'rw');
+has headers       => (is => 'rw');
+has _body         => (is => 'rw');
+has body_complete => (is => 'rw');
 
 # Taken from HTTP::Message, which isn't suited to subclassing
 sub parse_headers($self, $str) {
@@ -36,23 +43,23 @@ sub parse_headers($self, $str) {
 
 # This should be more robust against mal(icious|formed) WARC files
 sub read($self,$fh, %options) {
-    $self= ref $self ? $self : $self->new();
+    $options{ max_body_size } ||= 1024*1024;
+    $options{ strict } //= 1;
 
-    # Headers longer than that are not interesting
-    $options{ max_body_size } //= 1024*1024;
-    $options{ strict }= 1;
-    $options{ offset } //= tell $fh;
+    $self= ref $self ? $self : $self->new({
+        offset => tell($fh),
+    });
 
     binmode $fh; # Should not be necessary, but...
     
     local $/= "\r\n";
     my $version= <$fh>;
-    use Data::Dumper;
-    local $Data::Dumper::Useqq= 1;
-    $version=~ m!^WARC/[01]\.\d+\r\n$!
-        or croak "Not a WARC buffer: " . Dumper $version;
-    $self->{version}= $version;
-    
+    if( !$version=~ m!^WARC/[01]\.\d+\r\n$!) {
+        require Data::Dumper;
+        local $Data::Dumper::Useqq= 1;
+        croak "Not a WARC buffer: " . Data::Dumper::Dumper( $version );
+    };
+    $self->version( $version );
     
     local $/= "\r\n\r\n";
     my $h= <$fh>;
@@ -61,8 +68,8 @@ sub read($self,$fh, %options) {
     # verify headers
     my $len= $headers->content_length;
     if( ! defined $len) {
-        use Data::Dumper;
-        warn Dumper $headers;
+        require Data::Dumper;
+        #warn Dumper $headers;
         croak "Invalid WARC header: No Content-Length defined in <<$h>>";
     };
     my $max_len; # how many bytes will we read in at max?
@@ -105,7 +112,7 @@ sub read($self,$fh, %options) {
         local $/ = \(1024*1024);
         1 while <$fh>;
         
-        $self->{ _body }= $body;
+        $self->_body( $body );
     } else {
         #print sprintf "Skipping %d bytes for body\n", $len;
         # Jump to EOF

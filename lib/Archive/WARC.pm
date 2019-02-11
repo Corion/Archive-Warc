@@ -1,12 +1,14 @@
 package Archive::WARC;
 use strict;
 use warnings;
+use Moo 2;
 use Filter::signatures;
 no warnings 'experimental::signatures';
 use feature 'signatures';
 use Carp qw( croak );
 
 use IO::Uncompress::AnyUncompress;
+
 
 =head1 NAME
 
@@ -25,7 +27,7 @@ our $VERSION = 0.01;
 #use HTTP::Request;
 #use HTTP::Response;
 
-use vars qw(%record_types);
+our %record_types;
 
 sub new {
     my( $class, %options )= @_;
@@ -71,7 +73,6 @@ sub read( $self, %options ) {
     # Support any compression
     my $ofs= tell($fh);
     my $reader= IO::Uncompress::AnyUncompress->new( $fh );
-    #my $reader= IO::Uncompress::Gunzip->new( $fh );
     $reader->binmode();
 
     while( ! $reader->eof ) {
@@ -90,7 +91,7 @@ sub read( $self, %options ) {
         
         if( 'text/plain' eq $r->{_headers}->content_type ) {
             print "----\n";
-            print $r->{_body};
+            print $r->_body;
             print "----\n";
         };
         
