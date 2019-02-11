@@ -141,4 +141,12 @@ sub body( $self, $fh ) {
     $self->{_body}
 }
 
+sub is_request($self) {
+    join( ";", $self->headers->content_type ) eq 'application/http;msgtype=request';
+};
+
+sub is_response($self) {
+    join( ";", $self->headers->content_type ) eq 'application/http;msgtype=response';
+};
+
 1;
