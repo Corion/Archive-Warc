@@ -38,7 +38,7 @@ sub new {
         open $options{ fh }, \my $buffer
             or die "Couldn't create in-memory file: $!";
     };
-    
+
     # List of requests+responses contained in this crawl
     # UUID -> offset
     $options{ manifest } ||= {};
@@ -59,7 +59,7 @@ sub verify_warc_header( $self, $header ) {
 }
 
 sub parse_version( $self ) {
-    
+
 }
 
 sub read( $self, %options ) {
@@ -83,18 +83,20 @@ sub read( $self, %options ) {
         #print sprintf "Header type: %s\n", $r->{_headers}->header('WARC-Type');
         #print sprintf "Header type: %s\n", $r->{_headers}->header('Content-Type');
         #print sprintf "UUID: %s\n", $r->{_headers}->header('WARC-UUID');
+
         print $r->headers->as_string;
+
         #print sprintf "Content-Length according to WARC     : %d\n", $r->{_headers}->content_length;
-        if( defined $r->{body}) {
-            print sprintf "Content-Length according to read data: %d\n", length $r->{_body};
+        if( defined $r->_body) {
+            print sprintf "Content-Length according to read data: %d\n", length $r->_body;
         };
-        
+
         if( 'text/plain' eq $r->headers->content_type ) {
             print "----\n";
             print $r->_body;
             print "----\n";
         };
-        
+
         # If we have more, read them:
         $reader->nextStream();
         $ofs= tell($fh) - length( $reader->trailingData );
@@ -124,7 +126,7 @@ sub add_request( $self, $request ) {
 # Shorthand to add a response (headers+body)
 # Assumes a HTTP::Response duck-type
 sub add_response( $self, $response, $uuid ) {
-    
+
     if( ! $uuid ) {
         croak "Need a UUID for a response!";
     };

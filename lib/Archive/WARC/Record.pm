@@ -10,8 +10,6 @@ use IO::Uncompress::AnyUncompress ();
 
 our $VERSION = 0.01;
 
-#has max_body_size => (is => 'ro', default => 1024*1024);
-#has strict        => (is => 'ro', default => 1);
 has offset        => (is => 'ro');
 has version       => (is => 'rw');
 has headers       => (is => 'rw');
@@ -51,7 +49,7 @@ sub read($self,$fh, %options) {
     });
 
     binmode $fh; # Should not be necessary, but...
-    
+
     local $/= "\r\n";
     my $version= <$fh>;
     if( !$version=~ m!^WARC/[01]\.\d+\r\n$!) {
@@ -60,7 +58,7 @@ sub read($self,$fh, %options) {
         croak "Not a WARC buffer: " . Data::Dumper::Dumper( $version );
     };
     $self->version( $version );
-    
+
     local $/= "\r\n\r\n";
     my $h= <$fh>;
     my $headers= $self->parse_headers($h);
@@ -80,18 +78,18 @@ sub read($self,$fh, %options) {
     };
 
     #print sprintf "Length of headers: %d\n", length $h;
-    
+
     # We should allow for uncompressed files here too...
     if( $options{ read_body }) {
         my $read= 0;
         my $body;
         while( $max_len > $read ) {
             my $bytes_read= read( $fh, $body, $max_len, length $body );
-            
+
             last if eof($fh);
             $read+= $bytes_read;
         };
-        
+
         # Also read+skip the CRLF+CRLF at the end
         if( ! eof($fh) ) {
             my $trailer= read($fh, my $buf, 4);
@@ -103,7 +101,7 @@ sub read($self,$fh, %options) {
         # If we didn't read to the end, we're likely not complete
         $self->{body_complete}=    $max_len < $read
                                 || eof($fh);
-        
+
         # https://lists.gnu.org/archive/html/bug-wget/2012-11/msg00023.html
         # The Content-Length of files produced by (some versions of)
         # wget is invalid...
@@ -111,7 +109,7 @@ sub read($self,$fh, %options) {
         # For others, wind forward until the next m!^WARC/1.0! record!
         local $/ = \(1024*1024);
         1 while <$fh>;
-        
+
         $self->_body( $body );
     } else {
         #print sprintf "Skipping %d bytes for body\n", $len;
@@ -127,7 +125,7 @@ sub read($self,$fh, %options) {
     #    print "[[$h]]";
     #    print "[[$self->{_body}]]";
     #};
-    
+
     # Parse the HTTP headers and payload, at least
     # to some extent
     # Also provide the URL
