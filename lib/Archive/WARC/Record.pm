@@ -36,7 +36,7 @@ sub parse_headers($self, $str) {
         }
     }
     local $HTTP::Headers::TRANSLATE_UNDERSCORE;
-    HTTP::Headers->new(
+    return HTTP::Headers->new(
         @hdr
     );
 }
@@ -64,7 +64,7 @@ sub read($self,$fh, %options) {
     local $/= "\r\n\r\n";
     my $h= <$fh>;
     my $headers= $self->parse_headers($h);
-    $self->{ _headers }= $headers;
+    $self->headers( $headers );
     # verify headers
     my $len= $headers->content_length;
     if( ! defined $len) {
