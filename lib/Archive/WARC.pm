@@ -1,5 +1,6 @@
 package Archive::WARC;
 use strict;
+use warnings;
 use Filter::signatures;
 no warnings 'experimental::signatures';
 use feature 'signatures';
@@ -155,6 +156,8 @@ L<http://www.digitalpreservation.gov/formats/fdd/fdd000236.shtml>
 
 L<https://github.com/chfoo/warcat>
 
-L<Archive::HAR>
+L<https://github.com/machawk1/warcreate>
+
+L<Archive::Har>
 
 =cut
