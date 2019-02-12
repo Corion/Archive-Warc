@@ -19,4 +19,6 @@ This is a work in progress, not yet fit for release on CPAN.
 
 [https://github.com/chfoo/warcat](https://github.com/chfoo/warcat)
 
-[Archive::HAR](https://metacpan.org/pod/Archive::HAR)
+[https://github.com/machawk1/warcreate](https://github.com/machawk1/warcreate)
+
+[Archive::Har](https://metacpan.org/pod/Archive::Har)
