@@ -142,11 +142,11 @@ sub body( $self, $fh ) {
 }
 
 sub is_request($self) {
-    join( ";", $self->headers->content_type ) eq 'application/http;msgtype=request';
+    $self->headers->header('WARC-Type') eq 'request';
 };
 
 sub is_response($self) {
-    join( ";", $self->headers->content_type ) eq 'application/http;msgtype=response';
+    $self->headers->header('WARC-Type') eq 'response';
 };
 
 1;
