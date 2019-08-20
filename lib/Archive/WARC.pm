@@ -74,6 +74,7 @@ sub read( $self, %options ) {
     my $ofs = tell($fh);
     my $reader= IO::Uncompress::AnyUncompress->new( $fh );
     $reader->binmode();
+    my %requests;
 
     while( ! $reader->eof ) {
         # Save the offset in the compressed file of this part
@@ -84,23 +85,43 @@ sub read( $self, %options ) {
         #print sprintf "Header type: %s\n", $r->{_headers}->header('Content-Type');
         #print sprintf "UUID: %s\n", $r->{_headers}->header('WARC-UUID');
 
-        print $r->headers->as_string;
+        #print $r->headers->as_string;
 
         #print sprintf "Content-Length according to WARC     : %d\n", $r->{_headers}->content_length;
         if( defined $r->_body) {
-            print sprintf "Content-Length according to read data: %d\n", length $r->_body;
+            #print sprintf "Content-Length according to read data: %d\n", length $r->_body;
+            my $url = $r->headers->header('WARC-Target-URI');
+            my $rid = $r->headers->header('WARC-Record-ID');
+            my $requestid = $r->headers->header('WARC-Concurrent-To');
+            print $r->headers->header('WARC-Type'), "\n";
+            print $r->headers->as_string;
+            if( $r->is_request ) {
+                use HTTP::Request;
+                my $request = HTTP::Request->parse($r->_body());
+                $requests{ $rid } = $request;
+                print ">>> " . $request->uri, " ($rid)\n";
+            };
+            if( $r->is_response) {
+                my $request = delete $requests{ $requestid }
+                    or die "No request found for $rid";
+                print "Found <$rid>\n";
+                use HTTP::Response;
+                my $response = HTTP::Response->parse($r->_body());
+                #    # Fix up the appropriate request
+                $response->request( $request );
+            };
         };
 
-        if( 'text/plain' eq $r->headers->content_type ) {
-            print "----\n";
-            print $r->_body;
-            print "----\n";
-        };
+        #if( 'text/plain' eq $r->headers->content_type ) {
+        #    print "----\n";
+        #    print $r->_body;
+        #    print "----\n";
+        #};
 
         # If we have more, read them:
         $reader->nextStream();
         $ofs= tell($fh) - length( $reader->trailingData );
-        warn sprintf "File offset of last block %d\n", $ofs;
+        #warn sprintf "File offset of last block %d\n", $ofs;
     };
 }
 
