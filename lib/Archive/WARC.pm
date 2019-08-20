@@ -18,6 +18,10 @@ Archive::Warc - read and write Web ARChive (WARC) files
 
 This is a work in progress, not yet fit for release on CPAN.
 
+=head1 SEE ALSO
+
+L<WARC> - a module that is actually in use
+
 =cut
 
 our $VERSION = 0.01;

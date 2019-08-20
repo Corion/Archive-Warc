@@ -11,6 +11,10 @@ This is a work in progress, not yet fit for release on CPAN.
 
 # SEE ALSO
 
+[WARC](https://metacpan.org/pod/WARC) - a module that is actually in use
+
+# SEE ALSO
+
 [https://github.com/iipc/warc-specifications/blob/gh-pages/specifications/warc-format/warc-1.1/index.md](https://github.com/iipc/warc-specifications/blob/gh-pages/specifications/warc-format/warc-1.1/index.md)
 
 [http://bibnum.bnf.fr/WARC/WARC\_ISO\_28500\_version1\_latestdraft.pdf](http://bibnum.bnf.fr/WARC/WARC_ISO_28500_version1_latestdraft.pdf)
