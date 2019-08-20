@@ -10,7 +10,7 @@ use ExtUtils::MakeMaker qw(WriteMakefile);
 my $eumm_version = $ExtUtils::MakeMaker::VERSION;
 $eumm_version =~ s/_//;
 
-my $module = 'Archive::Warc';
+my $module = 'Archive::WARC';
 (my $main_file = "lib/$module.pm" ) =~ s!::!/!g;
 
 # I should maybe use something like Shipwright...
@@ -28,15 +28,15 @@ WriteMakefile1(
         "meta-spec" => { version => 2 },
         resources => {
             repository => {
-                web => 'https://github.com/Corion/Archive-Warc',
-                url => 'git://github.com/Corion/Archive-Warc.git',
+                web => 'https://github.com/Corion/Archive-WARC',
+                url => 'git://github.com/Corion/Archive-WARC.git',
                 type => 'git',
             }
         },
         dynamic_config   => 0, # we promise to keep META.* up-to-date
         x_static_install => 1, # we are pure Perl and don't do anything fancy
     },
-    
+
     MIN_PERL_VERSION => '5.006',
 
     ($eumm_version >= 6.3001
@@ -63,7 +63,7 @@ WriteMakefile1(
     },
 
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean               => { FILES => 'Archive-Warc-*' },
+    clean               => { FILES => 'Archive-WARC-*' },
 
     test            => { TESTS => join( ' ', @tests ) },
 );
@@ -96,7 +96,7 @@ sub WriteMakefile1 {  #Written by Alexandr Ciornii, version 0.21. Added by eumm-
     delete $params{AUTHOR} if $] < 5.005;
     delete $params{ABSTRACT_FROM} if $] < 5.005;
     delete $params{BINARY_LOCATION} if $] < 5.005;
-    
+
     WriteMakefile(%params);
 }
 
@@ -134,7 +134,7 @@ INSTALL
             pod_section($_[0], 'AUTHOR'),
             pod_section($_[0], 'LICENSE' ),
             pod_section($_[0], 'COPYRIGHT' ),
-    ;        
+    ;
         update_file( 'README', $readme );
     };
     # README.mkdn is the documentation that will be shown as the main
@@ -149,7 +149,7 @@ INSTALL
         $parser->parse_from_file($_[0]);
         my $readme_mkdn = <<STATUS . $parser->as_markdown;
 
-[![Build Status](https://travis-ci.org/Corion/Archive-Warc.svg?branch=master)](https://github.com/Corion/Archive-Warc)
+[![Build Status](https://travis-ci.org/Corion/Archive-WARC.svg?branch=master)](https://github.com/Corion/Archive-WARC)
 
 STATUS
         update_file( 'README.mkdn', $readme_mkdn );
@@ -161,7 +161,7 @@ sub pod_section {
     open my $fh, '<', $filename
         or die "Couldn't read '$filename': $!";
 
-    my @section = 
+    my @section =
         grep { /^=head1\s+$section/.../^=/ } <$fh>;
     pop @section if $section[-1] =~ /^=/;
     shift @section if $remove_heading;
@@ -173,7 +173,7 @@ sub pod_section {
         shift @section
             while $section[0] =~ /^\s*$/;
     };
-    
+
     @section = map { $_ =~ s!^=\w+\s+!!; $_ } @section;
     return join "", @section;
 }

@@ -1,5 +1,5 @@
 
-[![Build Status](https://travis-ci.org/Corion/Archive-Warc.svg?branch=master)](https://github.com/Corion/Archive-Warc)
+[![Build Status](https://travis-ci.org/Corion/Archive-WARC.svg?branch=master)](https://github.com/Corion/Archive-WARC)
 
 # NAME
 
